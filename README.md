@@ -17,3 +17,6 @@ Upload the contents of this folder to the repository root. Open Actions, choose 
 
 ## Important
 The GitHub workflow performs the authoritative Godot import, script parse, headless startup, and APK export checks. A release AAB needs a private release keystore stored as GitHub secrets. Never commit a release keystore.
+
+## SDK 36 Gradle requirement
+Both Android presets use the Gradle build because Godot only permits overriding minSdk and targetSdk with Gradle enabled. The CI workflow extracts the matching `android_source.zip` into `android/build` before validation and export.

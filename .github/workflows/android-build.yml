@@ -35,6 +35,9 @@ jobs:
           mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
           unzip -q "Godot_v${GODOT_RELEASE}_export_templates.tpz" -d /tmp/templates
           cp -R /tmp/templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/"
+          mkdir -p android/build
+          unzip -q "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/android_source.zip" -d android/build
+          test -f android/build/build.gradle
       - name: Configure and validate
         run: |
           mkdir -p "$HOME/.config/godot" "$HOME/.android" builds/android
