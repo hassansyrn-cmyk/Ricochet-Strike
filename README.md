@@ -24,3 +24,6 @@ Both Android presets use the Gradle build because Godot only permits overriding 
 
 ## Godot 4.7 requirement
 API 36 export uses Godot 4.7 and matching 4.7.stable templates. Godot 4.6 rejects targetSdk 36 during preset validation because its default Android target is API 35.
+
+## Android texture compression
+The project explicitly enables ETC2/ASTC importing through `rendering/textures/vram_compression/import_etc2_astc=true`, which is required by Godot for Android export.
