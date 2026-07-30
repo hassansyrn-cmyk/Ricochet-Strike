@@ -10,7 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
-      GODOT_VERSION: 4.6-stable
+      GODOT_RELEASE: 4.6-stable
+      GODOT_TEMPLATE_VERSION: 4.6.stable
       ANDROID_API: 36
       ANDROID_BUILD_TOOLS: 35.0.1
     steps:
@@ -26,14 +27,14 @@ jobs:
           sdkmanager "platform-tools" "platforms;android-${ANDROID_API}" "build-tools;${ANDROID_BUILD_TOOLS}" "cmdline-tools;latest"
       - name: Install Godot
         run: |
-          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
-          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_export_templates.tpz"
-          unzip -q "Godot_v${GODOT_VERSION}_linux.x86_64.zip"
-          sudo mv "Godot_v${GODOT_VERSION}_linux.x86_64" /usr/local/bin/godot
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
+          wget -q "https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v${GODOT_RELEASE}_export_templates.tpz"
+          unzip -q "Godot_v${GODOT_RELEASE}_linux.x86_64.zip"
+          sudo mv "Godot_v${GODOT_RELEASE}_linux.x86_64" /usr/local/bin/godot
           sudo chmod +x /usr/local/bin/godot
-          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}"
-          unzip -q "Godot_v${GODOT_VERSION}_export_templates.tpz" -d /tmp/templates
-          cp -R /tmp/templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_VERSION}/"
+          mkdir -p "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}"
+          unzip -q "Godot_v${GODOT_RELEASE}_export_templates.tpz" -d /tmp/templates
+          cp -R /tmp/templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/"
       - name: Configure and validate
         run: |
           mkdir -p "$HOME/.config/godot" "$HOME/.android" builds/android
@@ -45,7 +46,7 @@ jobs:
           EOF
           keytool -genkeypair -keystore "$HOME/.android/debug.keystore" -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
           godot --headless --editor --path . --import --quit
-          godot --headless --path . --quit --frame-delay 1
+          godot --headless --path . --quit-after 2
       - name: Export APK
         env:
           GODOT_ANDROID_KEYSTORE_DEBUG_PATH: /home/runner/.android/debug.keystore
