@@ -1,6 +1,6 @@
 # Ricochet Strike Complete
 
-Mobile-first Godot 4.6 hyper-casual ricochet puzzle game.
+Mobile-first Godot 4.7 hyper-casual ricochet puzzle game.
 
 ## Included
 - Home, level selection, projectile shop, daily reward, gameplay, win/loss screens.
@@ -20,3 +20,7 @@ The GitHub workflow performs the authoritative Godot import, script parse, headl
 
 ## SDK 36 Gradle requirement
 Both Android presets use the Gradle build because Godot only permits overriding minSdk and targetSdk with Gradle enabled. The CI workflow extracts the matching `android_source.zip` into `android/build` before validation and export.
+
+
+## Godot 4.7 requirement
+API 36 export uses Godot 4.7 and matching 4.7.stable templates. Godot 4.6 rejects targetSdk 36 during preset validation because its default Android target is API 35.
