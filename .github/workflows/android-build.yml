@@ -36,9 +36,9 @@ jobs:
           unzip -q "Godot_v${GODOT_RELEASE}_export_templates.tpz" -d /tmp/templates
           cp -R /tmp/templates/templates/. "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/"
           rm -rf android/build
-          mkdir -p android/build
-          unzip -q "$HOME/.local/share/godot/export_templates/${GODOT_TEMPLATE_VERSION}/android_source.zip" -d android/build
+          godot --headless --path . --install-android-build-template
           test -f android/build/build.gradle
+          test -f android/build/.build_version
       - name: Configure and validate
         run: |
           mkdir -p "$HOME/.config/godot" "$HOME/.android" builds/android

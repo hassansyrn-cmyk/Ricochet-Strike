@@ -27,3 +27,6 @@ API 36 export uses Godot 4.7 and matching 4.7.stable templates. Godot 4.6 reject
 
 ## Android texture compression
 The project explicitly enables ETC2/ASTC importing through `rendering/textures/vram_compression/import_etc2_astc=true`, which is required by Godot for Android export.
+
+## Gradle template installation
+CI now invokes Godot's own `--install-android-build-template` command instead of manually extracting `android_source.zip`. This creates the `.build_version` metadata used by the Android exporter. A 512×512 project icon is also configured.
