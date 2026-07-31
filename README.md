@@ -1,32 +1,134 @@
-# Ricochet Strike Complete
+# Ricochet Strike (React + Capacitor)
 
-Mobile-first Godot 4.7 hyper-casual ricochet puzzle game.
+A polished, playable vertical mobile 2D physics puzzle game built with React, TypeScript, Vite, HTML5 Canvas, and Capacitor Android, targeting Android SDK 36.
 
-## Included
-- Home, level selection, projectile shop, daily reward, gameplay, win/loss screens.
-- 100 deterministic progressive levels across five worlds.
-- Mandatory ricochet rule, trajectory preview, bounce multipliers, ammo, score, and three-star grading.
-- Fixed and moving targets, rotating shields, hazards, breakable glass, portals, gravity wells, disappearing walls, and timers.
-- Six unlockable projectile appearances with tuned launch speed.
-- Persistent progress, stars, coins, owned projectiles, settings, and daily reward.
-- Particles, trails, camera shake, flash, vibration, and critical-hit presentation.
-- Android SDK 36, minSdk 24, arm64, debug APK workflow, and release AAB preset.
+## 🎯 Gameplay Concept
 
-## Build APK
-Upload the contents of this folder to the repository root. Open Actions, choose Build Android APK, and run the workflow. Download the `Ricochet-Strike-debug-apk` artifact.
+In **Ricochet Strike**, **DIRECT HITS ARE FORBIDDEN**.
+- The projectile must bounce from at least one valid wall or surface before hitting the target.
+- If the projectile hits the target with zero valid bounces, the attempt immediately fails.
 
-## Important
-The GitHub workflow performs the authoritative Godot import, script parse, headless startup, and APK export checks. A release AAB needs a private release keystore stored as GitHub secrets. Never commit a release keystore.
+### Core Gameplay Mechanics
+- **Physics Engine**: Clean, custom, deterministic 2D physics running on a fixed sub-stepped physics timestep (1/120s) to prevent tunneling.
+- **Trajectory Predictor**: Displays expected bounce and reflection paths in real-time while aiming, using the exact same collision models.
+- **Exponential Score Multipliers**:
+  - 1 bounce = 1x
+  - 2 bounces = 2x
+  - 3 bounces = 4x
+  - 4 bounces = 8x
+  - 5+ bounces = 16x
 
-## SDK 36 Gradle requirement
-Both Android presets use the Gradle build because Godot only permits overriding minSdk and targetSdk with Gradle enabled. The CI workflow extracts the matching `android_source.zip` into `android/build` before validation and export.
+## 🚀 Branch Strategy
 
+- `main`: Preserved original Godot reference version. **Do not modify.**
+- `react-capacitor`: The active production branch containing the fully migrated React + Capacitor implementation.
 
-## Godot 4.7 requirement
-API 36 export uses Godot 4.7 and matching 4.7.stable templates. Godot 4.6 rejects targetSdk 36 during preset validation because its default Android target is API 35.
+## 🎮 Game Content
 
-## Android texture compression
-The project explicitly enables ETC2/ASTC importing through `rendering/textures/vram_compression/import_etc2_astc=true`, which is required by Godot for Android export.
+**100 Progressive levels** across **5 unique worlds**:
+1. **World 1 (Levels 1-20)**: Onboarding levels with fixed walls, angled surfaces, and single-bounce training.
+2. **World 2 (Levels 21-40)**: Moving hazards, breakable glass panels, and 2+ bounces.
+3. **World 3 (Levels 41-60)**: Linked portals, gravity wells, and gravity/warp combos.
+4. **World 4 (Levels 61-80)**: Moving targets and rotating defensive shields with weak openings.
+5. **World 5 (Levels 81-100)**: Timed precision mechanisms, disappearing blinking walls, 4 mandatory bounces, and highly restricted ammo limits.
 
-## Gradle template installation
-CI now invokes Godot's own `--install-android-build-template` command instead of manually extracting `android_source.zip`. This creates the `.build_version` metadata used by the Android exporter. A 512×512 project icon is also configured.
+---
+
+## ⚡ Six Unlockable Projectile Types
+
+Centralized balance profiles configured under `src/physics/projectileConfig.ts`:
+1. **Pulse**: Balanced default projectile with standard restitution and mass.
+2. **Heavy**: lower speed, high mass, and maximum break force. Perfect for breaking glass.
+3. **Volt**: Can chain electrical energy to the target from a distance (140 units max) if bounce requirements are met and line-of-sight is clear.
+4. **Frost**: Applies a temporary 45% speed slowdown for 2.5 seconds on targets, rotating shields, or moving obstacles on impact.
+5. **Phantom**: Can phase straight through one specially marked `phantomPassable: true` obstacle wall.
+6. **Split**: Splits into two child projectiles at ±18-degree angles after its first bounce, preserving 92% speed and inheriting individual bounce tracking.
+
+---
+
+## 🏗️ Technical Stack & SDK Versions
+
+- **Node.js**: v22
+- **Java**: JDK 21
+- **Android Target SDK**: 36
+- **Android Compile SDK**: 36
+- **Android Min SDK**: 24
+- **Capacitor App ID**: `com.ricochetstrike.game`
+- **Capacitor Name**: `Ricochet Strike`
+
+---
+
+## 🛠️ Development and Build Commands
+
+### 1. Installation
+Installs both production dependencies and development testing/compilation libraries:
+```bash
+npm install
+```
+
+### 2. Run Local Web Server
+Runs Vite's hot-reloading development preview web server:
+```bash
+npm run dev
+```
+
+### 3. Running Unit Tests
+Runs the test suites to assert vector maths, seeded procedurals, and save-upgrade structures:
+```bash
+npm run test
+```
+
+### 4. Code Type-checking
+Validates type constraints using the TypeScript compiler:
+```bash
+npm run typecheck
+```
+
+### 5. Compile Web Bundle
+Generates production-optimized distribution files into the `dist/` folder:
+```bash
+npm run build
+```
+
+---
+
+## 📱 Mobile Android Builds
+
+### 1. Synchronize Web Assets
+Syncs the compiled static web bundle from the `dist/` directory into the native Android application shell:
+```bash
+npx cap sync android
+```
+
+### 2. Compile Debug APK
+Compiles the developer-signed test APK:
+```bash
+cd android
+./gradlew assembleDebug
+```
+- **Output Path**: `android/app/build/outputs/apk/debug/app-debug.apk`
+
+### 3. Compile Release AAB
+Builds the unsigned distribution bundle:
+```bash
+cd android
+./gradlew bundleRelease
+```
+- **Output Path**: `android/app/build/outputs/bundle/release/app-release.aab`
+
+> ⚠️ *Note on AAB Release Signing*: The compiled `.aab` is locally generated as an **unsigned release bundle**. For Google Play deployment, a production release keystore must be configured. Never commit or push private signing keystores to Git.
+
+---
+
+## 🤖 GitHub Actions CI/CD Pipeline
+
+The `.github/workflows/android-build.yml` automated workflow runs on every push and pull request to the `react-capacitor` branch.
+
+**Workflow Operations**:
+1. Checks out repository files.
+2. Seeds Node.js 22, Java 21, and Android SDK 36 platform platforms.
+3. Installs clean dependencies via `npm ci`.
+4. Executes TypeScript type-checks and runs all 8 Vitest unit tests.
+5. Generates the production web bundle and syncs it with Capacitor.
+6. Compiles the native debug APK and release AAB.
+7. Uploads the verified non-empty output debug APK as a build artifact named `Ricochet-Strike-debug-apk`.
